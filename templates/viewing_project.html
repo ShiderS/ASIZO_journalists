@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+<body>
+{% block content %}
+<h1>{{ projects.title }}</h1>
+{% if projects.image %}
+<img class="img_project"
+     src='../static/img/new_img.png'>
+{% endif %}
+<div>
+    <a href="/like_projects/{{ projects.id }}" class="btn btn-success">
+        Нравится {{ projects.like }}
+    </a>
+
+    <a href="/dislike_projects/{{ projects.id }}" class="btn btn-danger">
+        Не нравится {{ projects.dislike }}
+    </a>
+</div><br>
+<p>{{ projects.content }}</p>
+{% if current_user.is_authenticated and current_user == projects.user or current_user.is_developer %}
+    <div>
+        <a href="/projects/{{ projects.id }}" class="btn btn-secondary">
+            Изменить
+        </a>
+        <a href="/projects_delete/{{ projects.id }}" class="btn btn-danger">
+            Удалить
+        </a>
+    </div>
+{% endif %}
+<hr>
+<p>Напишите комментарий:</p>
+<form action="" method="post" class="comm">
+    <textarea name='text' class="comment"></textarea>
+    <!--<a href="/project_comment/{{ projects.id }}" class="btn btn-secondary">Отправить</a>-->
+    <input name="com_submit" type="submit">
+</form>
+<p>Комментарии:</p>
+{% if comments %}
+{% for i in comments %}
+<div class="col-md6 border rounded aaa">
+    <h4>{{i[1].name}}</h4>
+    <div>
+        <h5>{{i[0]}}</h5>
+    </div>
+</div>
+{% endfor %}
+{% else %}
+    <div class="col-md6 border rounded aaa">
+    <h5>Ещё никто не написал комментарий :(</h5>
+</div>
+<br>
+{% endif %}
+{% endblock %}
+</body>
