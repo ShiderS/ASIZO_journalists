@@ -5,7 +5,7 @@ from wtforms.validators import DataRequired
 
 
 class ProjectsForm(FlaskForm):
-    title = StringField('Название проекта', validators=[DataRequired()])
+    title = StringField('Название', validators=[DataRequired()])
     content = TextAreaField("Содержание")
     is_private = BooleanField("Личное")
     image = FileField('Изображение')
