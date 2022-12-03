@@ -9,6 +9,7 @@ from forms.auth import LoginForm
 from data.projects import Projects
 from forms.projects import ProjectsForm
 import projects_api
+from pattern import *
 
 from flask_restful import abort, Api
 
@@ -34,7 +35,7 @@ def abort_if_projects_not_found(projects_id):
 
 
 def main():
-    db_session.global_init("db/project-gallerybd.db")
+    db_session.global_init("db/db.db")
     app.run()
 
     # user = User()
@@ -473,7 +474,7 @@ def projects_developer_not_delete(id):
 
 
 def main():
-    db_session.global_init("db/project-gallerybd.db")
+    db_session.global_init("db/db.db")
     app.register_blueprint(projects_api.blueprint)
     app.run()
     # для списка объектов
