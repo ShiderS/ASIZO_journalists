@@ -313,7 +313,7 @@ def index():
     else:
         projects = db_sess.query(Projects).filter()
 
-    return render_template("index.html", projects=projects)
+    return render_template("index.html")
 
 
 # Отправляем заявку
