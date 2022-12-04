@@ -1146,3 +1146,8 @@
 	width: 100%;
 	height: 80px;
 }
+
+.header {
+    position: fixed;
+    top: 0px;
+}
