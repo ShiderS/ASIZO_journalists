@@ -305,18 +305,20 @@ def index():
     db_sess = db_session.create_session()
     if request.method == "POST":
         db_sess = db_session.create_session()
+        user = db_sess.query(User).filter(User.id == current_user.get_id()).first()
         search = request.form.get('text')
         projects1 = db_sess.query(Projects).filter(Projects.title.like(f"%{search.capitalize()}%") |
                                                    Projects.title.like(f"%{search.lower()}%") |
                                                    Projects.title.like(f"%{search.upper()}%")).all()
-        return render_template("index1.html", projects=projects1)
+        return render_template("index1.html", user=user)
+    user = db_sess.query(User).filter(User.id == current_user.get_id()).first()
     if current_user.is_authenticated:
         projects = db_sess.query(Projects).filter(
             (Projects.user == current_user))
     else:
         projects = db_sess.query(Projects).filter()
 
-    return render_template("index1.html")
+    return render_template("index1.html", user=user)
 
 
 # Отправляем заявку
