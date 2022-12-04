@@ -4,7 +4,7 @@ from flask import jsonify
 from flask_restful import reqparse, Resource
 
 from data import db_session
-from data.projects import Projects
+from data.application import Projects
 from main import abort_if_projects_not_found
 
 parser = reqparse.RequestParser()
