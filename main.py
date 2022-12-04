@@ -163,6 +163,25 @@ def login():
 # Проекты
 
 
+@app.route("/approved_panel", methods=['GET', 'POST'])
+def approved_panel():
+    db_sess = db_session.create_session()
+    if request.method == "POST":
+        db_sess = db_session.create_session()
+        search = request.form.get('text')
+        projects1 = db_sess.query(Projects).filter(Projects.title.like(f"%{search.capitalize()}%") |
+                                                   Projects.title.like(f"%{search.lower()}%") |
+                                                   Projects.title.like(f"%{search.upper()}%")).all()
+        return render_template("index.html", projects=projects1)
+    if current_user.is_authenticated:
+        projects = db_sess.query(Projects).filter(
+            (Projects.user == current_user))
+    else:
+        projects = db_sess.query(Projects).filter()
+
+    return render_template("approved_application.html", projects=projects)
+
+
 @app.route('/viewing_project/<int:id>', methods=['GET', 'POST'])
 @login_required
 def viewing_project(id):
