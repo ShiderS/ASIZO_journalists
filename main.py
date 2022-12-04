@@ -346,15 +346,20 @@ def application_submission():
         if file:
             try:
                 # безопасно извлекаем оригинальное имя файла
-                filename = secure_filename(file.filename)
+                filename = f"{projects.id}.docx"
                 # сохраняем файл
-                save_to = f'files/1{file.filename}'
+                save_to = f'applications/text/{filename}'
                 file.save(save_to)
                 file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+                projects.docx = save_to
                 # если все прошло успешно, то перенаправляем
                 # на функцию-представление `download_file`
                 # для скачивания файла
             except:
+                projects.docx = file.filename
+                current_user.projects.append(projects)
+                db_sess.merge(current_user)
+                db_sess.commit()
                 return redirect('/')
         projects.docx = file.filename
         current_user.projects.append(projects)
