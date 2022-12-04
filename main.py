@@ -6,8 +6,8 @@ from data.user import User
 from forms.user import RegisterForm
 from flask_login import LoginManager, login_user, login_required, logout_user, current_user
 from forms.auth import LoginForm
-from data.projects import Projects
-from forms.projects import ProjectsForm
+from data.application import Projects
+from forms.application import ProjectsForm
 import projects_api
 from pattern import *
 
@@ -290,23 +290,33 @@ def index():
         return render_template("index.html", projects=projects1)
     if current_user.is_authenticated:
         projects = db_sess.query(Projects).filter(
-            (Projects.user == current_user) | (Projects.is_private != True))
+            (Projects.user == current_user))
     else:
-        projects = db_sess.query(Projects).filter((Projects.is_private != True))
+        projects = db_sess.query(Projects).filter()
 
     return render_template("index.html", projects=projects)
 
 
-@app.route('/projects', methods=['GET', 'POST'])
+# Отправляем заявку
+
+
+@app.route('/application_submission', methods=['GET', 'POST'])
 @login_required
-def add_projects():
+def application_submission():
     form = ProjectsForm()
     if form.validate_on_submit():
         db_sess = db_session.create_session()
         projects = Projects()
-        projects.title = form.title.data
-        projects.content = form.content.data
-        projects.is_private = form.is_private.data
+        # projects.title = form.title.data
+        # projects.content = form.content.data
+        # projects.is_private = form.is_private.data
+        projects.fullnames = ' '.join([form.surname.data, form.name.data, form.middle_name.data])
+        projects.post = form.post.data
+        projects.place = form.place.data
+        projects.topic = form.topic.data
+        projects.heading = form.heading.data
+        projects.annotation = form.annotation.data
+
         f = form.image.data
         check = 0
         if f.filename != '':
@@ -320,7 +330,7 @@ def add_projects():
         if check:
             remove(save_to)
         return redirect('/')
-    return render_template('projects.html', title='Добавление проекта',
+    return render_template('application_submission.html', title='Добавление проекта',
                            form=form)
 
 
@@ -387,9 +397,9 @@ def developer_panel():
         db_sess = db_session.create_session()
         if current_user.is_authenticated:
             projects = db_sess.query(Projects).filter(
-                (Projects.user == current_user) | (Projects.is_private != True))
+                (Projects.user == current_user))
         else:
-            projects = db_sess.query(Projects).filter((Projects.is_private != True))
+            projects = db_sess.query(Projects).filter()
 
         return render_template("index_developer.html", projects=projects)
 
