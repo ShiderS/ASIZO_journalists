@@ -9,10 +9,13 @@ from forms.auth import LoginForm
 from data.application import Projects
 from forms.application import ProjectsForm
 import projects_api
+import os
 from pattern import *
 
 
+# static_path = os.path.join(project_root, '../client/static')
 app = Flask(__name__)
+# app = Flask(__name__, template_folder=template_path, static_folder=static_path)
 login_manager = LoginManager()
 from flask_restful import abort, Api
 login_manager.init_app(app)
@@ -306,14 +309,14 @@ def index():
         projects1 = db_sess.query(Projects).filter(Projects.title.like(f"%{search.capitalize()}%") |
                                                    Projects.title.like(f"%{search.lower()}%") |
                                                    Projects.title.like(f"%{search.upper()}%")).all()
-        return render_template("index.html", projects=projects1)
+        return render_template("index1.html", projects=projects1)
     if current_user.is_authenticated:
         projects = db_sess.query(Projects).filter(
             (Projects.user == current_user))
     else:
         projects = db_sess.query(Projects).filter()
 
-    return render_template("index.html")
+    return render_template("index1.html")
 
 
 # Отправляем заявку
