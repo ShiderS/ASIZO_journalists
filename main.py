@@ -11,10 +11,10 @@ from forms.application import ProjectsForm
 import projects_api
 from pattern import *
 
-from flask_restful import abort, Api
 
 app = Flask(__name__)
 login_manager = LoginManager()
+from flask_restful import abort, Api
 login_manager.init_app(app)
 app.config['SECRET_KEY'] = 'secret_key'
 app.config['PERMANENT_SESSION_LIFETIME'] = datetime.timedelta(
