@@ -17,7 +17,7 @@
         </div>
         <div class="header_section">
             <a href="/projects"><div class="header_item headerbutton">
-                Разместить анонс
+                Подать заявку
             </div></a>
             <div class="header_item headerbutton">
                 <a href="/logout">Выход</a>
@@ -43,7 +43,7 @@
         </div>
     </div>
 
-    <center><h1>Мои анонсы:</h1></center>
+    <center><h1>Мои заявки:</h1></center>
     <div class="grid">
         {% for i in projects %}
         <div class="grid-item"><a class='project_link' href="/viewing_project/{{ i.id }}">{{ i.title }}</a></div>
