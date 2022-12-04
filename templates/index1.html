@@ -32,13 +32,13 @@
 <body class="u-body u-xl-mode" data-lang="ru">
 <header class="u-clearfix u-header u-header" id="sec-0567">
     <div class="u-clearfix u-sheet u-valign-middle u-sheet-1">
-        <a href="#" class="u-image u-logo u-image-1">
+        <a href="/" class="u-image u-logo u-image-1">
             <img src="../static/img/default-logo.png" class="u-logo-image u-logo-image-1">
         </a>
         <nav class="u-menu u-menu-dropdown u-offcanvas u-menu-1">
             <div class="menu-collapse" style="font-size: 1rem; letter-spacing: 0px;">
                 <a class="u-button-style u-custom-left-right-menu-spacing u-custom-padding-bottom u-custom-top-bottom-menu-spacing u-nav-link u-text-active-palette-1-base u-text-hover-palette-2-base"
-                   href="#">
+                   href="/">
                     <svg class="u-svg-link" viewBox="0 0 24 24">
                         <use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="#menu-hamburger"></use>
                     </svg>
@@ -54,18 +54,36 @@
             </div>
             <div class="u-nav-container">
                 <ul class="u-nav u-unstyled u-nav-1">
+                    {% if current_user.is_developer %}
                     <li class="u-nav-item"><a
                             class="u-button-style u-nav-link u-text-active-palette-1-base u-text-hover-palette-2-base"
-                            href="index1.html" style="padding: 10px 20px;">Главная</a>
+                            href="/developer_panel" style="padding: 10px 20px;">Неодобренные записи</a>
+                    </li>
+                    {% endif %}
+                    <li class="u-nav-item"><a
+                            class="u-button-style u-nav-link u-text-active-palette-1-base u-text-hover-palette-2-base"
+                            href="/approved_panel" style="padding: 10px 20px;">Одобренные заявки</a>
                     </li>
                     <li class="u-nav-item"><a
                             class="u-button-style u-nav-link u-text-active-palette-1-base u-text-hover-palette-2-base"
-                            href="О-нас.html" style="padding: 10px 20px;">О нас</a>
+                            href="https://reginform.orb.ru/" style="padding: 10px 20px;">О нас</a>
                     </li>
                     <li class="u-nav-item"><a
                             class="u-button-style u-nav-link u-text-active-palette-1-base u-text-hover-palette-2-base"
-                            href="Контакты.html" style="padding: 10px 20px;">Контакты</a>
+                            href="#numb-phone1" style="padding: 10px 20px;">Контакты</a>
                     </li>
+                    {% if current_user.is_authenticated %}
+                    <a class="navbar-brand" href="/user_profile">{{ current_user.name }}</a>
+                    {% else %}
+                    <li class="u-nav-item"><a
+                            class="u-button-style u-nav-link u-text-active-palette-1-base u-text-hover-palette-2-base"
+                            href="/login" style="padding: 10px 20px;">Войти</a>
+                    </li>
+                    <li class="u-nav-item"><a
+                            class="u-button-style u-nav-link u-text-active-palette-1-base u-text-hover-palette-2-base"
+                            href="/register" style="padding: 10px 20px;">Зарегистрироваться</a>
+                    </li>
+                    {% endif %}
                 </ul>
             </div>
             <div class="u-nav-container-collapse">
@@ -73,9 +91,8 @@
                     <div class="u-inner-container-layout u-sidenav-overflow">
                         <div class="u-menu-close"></div>
                         <ul class="u-align-center u-nav u-popupmenu-items u-unstyled u-nav-2">
-                            <li class="u-nav-item"><a class="u-button-style u-nav-link" href="index1.html">Главная</a>
-                            </li>
-                            <li class="u-nav-item"><a class="u-button-style u-nav-link" href="О-нас.html">О нас</a>
+                            <li class="u-nav-item"><a class="u-button-style u-nav-link"
+                                                      href="https://reginform.orb.ru/">О нас</a>
                             </li>
                             <li class="u-nav-item"><a class="u-button-style u-nav-link"
                                                       href="Контакты.html">Контакты</a>
@@ -238,7 +255,8 @@
                                     журналистов, редакций средств массовой информации, полиграфических предприятий на
                                     соискание премий Губернатора Оренбургской области
                                 </p>
-                                <a href="О-нас.html" class="u-border-2 u-border-white u-btn u-button-style u-btn-1">ПОДРОБНЕЕ</a>
+                                <a href="https://reginform.orb.ru/"
+                                   class="u-border-2 u-border-white u-btn u-button-style u-btn-1">ПОДРОБНЕЕ</a>
                             </div>
                         </div>
                         <div class="u-container-style u-layout-cell u-size-30 u-layout-cell-3">
@@ -317,7 +335,7 @@
                         <p class="u-text u-text-2" style="color: white"><strong style="font-size: 18px;">Наш
                             адрес:</strong><br>город Оренбург, улица Кобозева, 1Д<br>
                             <br>
-                            <strong style="font-size: 18px;">Наш телефон:</strong>
+                            <strong id="numb-phone1" style="font-size: 18px;">Наш телефон:</strong>
                             <!--                      <br><strong class="numb-phone">A</strong>&nbsp;+7 (961) 929-31-25-->
                             <!--                      <br><strong class="numb-phone">S</strong>&nbsp;+7 (922) 542-06-59-->
                             <!--                      <br><strong class="numb-phone">I</strong>&nbsp;+7 (961) 929-79-46-->
