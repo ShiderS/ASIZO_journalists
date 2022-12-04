@@ -20,6 +20,8 @@ class ProjectsForm(FlaskForm):
 
     # is_private = BooleanField("Личное")
 
-    image = FileField('Изображение')
+    docx = FileField('docx')
+
+    pdf = FileField('pdf')
 
     submit = SubmitField('Применить')

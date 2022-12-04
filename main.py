@@ -1,5 +1,5 @@
 from os import abort, remove
-from flask import Flask, request, make_response, render_template, redirect, jsonify
+from flask import Flask, request, make_response, render_template, redirect, jsonify, flash, redirect, url_for
 import datetime
 from data import db_session, projects_resources
 from data.user import User
@@ -9,6 +9,8 @@ from forms.auth import LoginForm
 from data.application import Projects
 from forms.application import ProjectsForm
 import projects_api
+from flask_restful import abort, Api
+from werkzeug.utils import secure_filename
 import os
 from pattern import *
 
@@ -16,18 +18,19 @@ from pattern import *
 app = Flask(__name__)
 # app = Flask(__name__, template_folder=template_path, static_folder=static_path)
 login_manager = LoginManager()
-from flask_restful import abort, Api
+
+UPLOAD_FOLDER = '/files'
+
+# расширения файлов, которые разрешено загружать
+ALLOWED_EXTENSIONS = {'txt', 'pdf', 'png', 'jpg', 'jpeg', 'gif'}
 
 login_manager.init_app(app)
 app.config['SECRET_KEY'] = 'secret_key'
 app.config['PERMANENT_SESSION_LIFETIME'] = datetime.timedelta(
     days=365
 )
+app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 api = Api(app)
-
-
-def delete_project(id):
-    pass
 
 
 def abort_if_projects_not_found(projects_id):
@@ -331,9 +334,6 @@ def application_submission():
     if form.validate_on_submit():
         db_sess = db_session.create_session()
         projects = Projects()
-        # projects.title = form.title.data
-        # projects.content = form.content.data
-        # projects.is_private = form.is_private.data
         projects.fullnames = ' '.join([form.surname.data, form.name.data, form.middle_name.data])
         projects.post = form.post.data
         projects.place = form.place.data
@@ -341,13 +341,27 @@ def application_submission():
         projects.heading = form.heading.data
         projects.annotation = form.annotation.data
 
-        f = form.image.data
+        file = form.docx.data
         check = 0
-        if f.filename != '':
-            check = 1
-            save_to = f'static/temporary_img/{f.filename}'
-            f.save(save_to)
-            projects.image = convert_to_binary_data(save_to)
+        if file:
+            try:
+                # безопасно извлекаем оригинальное имя файла
+                filename = f"{projects.id}.docx"
+                # сохраняем файл
+                save_to = f'applications/text/{filename}'
+                file.save(save_to)
+                file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+                projects.docx = save_to
+                # если все прошло успешно, то перенаправляем
+                # на функцию-представление `download_file`
+                # для скачивания файла
+            except:
+                projects.docx = file.filename
+                current_user.projects.append(projects)
+                db_sess.merge(current_user)
+                db_sess.commit()
+                return redirect('/')
+        projects.docx = file.filename
         current_user.projects.append(projects)
         db_sess.merge(current_user)
         db_sess.commit()

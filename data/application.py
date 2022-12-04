@@ -27,7 +27,8 @@ class Projects(SqlAlchemyBase, SerializerMixin):
     is_deleted = sqlalchemy.Column(sqlalchemy.Boolean, nullable=True, default=False)
 
     # image = sqlalchemy.BLOB(sqlalchemy.BLOB)
-    image = sqlalchemy.Column()
+    docx = sqlalchemy.Column(sqlalchemy.String)
+    pdf = sqlalchemy.Column(sqlalchemy.String)
 
     like = sqlalchemy.Column(sqlalchemy.Integer, default=0)
 
