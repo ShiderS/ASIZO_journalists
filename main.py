@@ -12,12 +12,12 @@ import projects_api
 import os
 from pattern import *
 
-
 # static_path = os.path.join(project_root, '../client/static')
 app = Flask(__name__)
 # app = Flask(__name__, template_folder=template_path, static_folder=static_path)
 login_manager = LoginManager()
 from flask_restful import abort, Api
+
 login_manager.init_app(app)
 app.config['SECRET_KEY'] = 'secret_key'
 app.config['PERMANENT_SESSION_LIFETIME'] = datetime.timedelta(
