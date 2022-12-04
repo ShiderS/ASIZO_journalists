@@ -4,15 +4,10 @@
 <h1>Одобренные заявки</h1>
 {% if current_user.is_authenticated %}
 {% endif %}
-{% for item in projects%}
+{% for item in projects %}
 {% if item.is_confirmed %}
 <div class="col-md6 border rounded">
-    {% if item.image %}
-    <img style='display:block;' id='base64image'
-   src='data:image/jpeg;base64, {{ item.image }}'>
-    <!-- <img src="{{ item.image }}" alt="здесь должна была быть картинка, но не нашлась"> -->
-    {% endif %}
-    <a href="/viewing_project/{{ item.id }}" class="text-decoration-none text-reset"><h2>{{item.heading}}</h2></a>
+    <a href="/score_submission/{{ item.id }}" class="text-decoration-none text-reset"><h2>{{item.heading}}</h2></a>
     <!--<div>
         <h5>{{item.content}}</h5>
     </div>-->

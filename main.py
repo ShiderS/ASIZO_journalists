@@ -2,7 +2,9 @@ from os import abort, remove
 from flask import Flask, request, make_response, render_template, redirect, jsonify, flash, redirect, url_for
 import datetime
 from data import db_session, projects_resources
+from data.score import Score
 from data.user import User
+from forms.score import ScoreForm
 from forms.user import RegisterForm
 from flask_login import LoginManager, login_user, login_required, logout_user, current_user
 from forms.auth import LoginForm
@@ -346,7 +348,7 @@ def application_submission():
         if file:
             try:
                 # безопасно извлекаем оригинальное имя файла
-                filename = f"{projects.id}.docx"
+                filename = f"{' '.join([form.surname.data, form.name.data, form.middle_name.data])}.docx"
                 # сохраняем файл
                 save_to = f'applications/text/{filename}'
                 file.save(save_to)
@@ -369,6 +371,34 @@ def application_submission():
             remove(save_to)
         return redirect('/')
     return render_template('application_submission.html', title='Добавление проекта',
+                           form=form)
+
+
+@app.route('/score_submission/<int:id>', methods=['GET', 'POST'])
+@login_required
+def score_submission(id):
+    form = ScoreForm()
+    if form.validate_on_submit():
+        db_sess = db_session.create_session()
+        score = db_sess.query(Score).filter(Score.id == id).first()
+        score.application_id = id
+        score.est_actual = form.est_actual.data
+        score.est_purpose = form.est_purpose.data
+        score.est_validity = form.est_validity.data
+        score.est_resonance = form.est_resonance.data
+        score.est_present_style = form.est_present_style.data
+        score.est_professionalism = form.est_professionalism.data
+        score.est_feed_avail = form.est_feed_avail.data
+        score.est_materials_cycle = form.est_materials_cycle.data
+        score.est_add = form.est_add.data
+        score.est_cliche = form.est_cliche.data
+        score.est_contract = form.est_contract.data
+        score.est_gramm_errors = form.est_gramm_errors.data
+        score.est_lexical_errors = form.est_lexical_errors.data
+
+        db_sess.commit()
+        return redirect('/')
+    return render_template('score.html', title='Добавление проекта',
                            form=form)
 
 
