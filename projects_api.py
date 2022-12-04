@@ -2,7 +2,7 @@ import flask
 from flask import jsonify, request
 
 from data import db_session
-from data.projects import Projects
+from data.application import Projects
 
 blueprint = flask.Blueprint(
     'projects_api',
@@ -50,12 +50,18 @@ def create_projects():
         return jsonify({'error': 'Bad request'})
     db_sess = db_session.create_session()
     projects = Projects(
-        title=request.json['title'],
-        content=request.json['content'],
         user_id=request.json['user_id'],
-        is_private=request.json['is_private'],
         is_confirmed=request.json['is_confirmed'],
-        is_deleted=request.json['is_deleted']
+        is_deleted=request.json['is_deleted'],
+        image=request.json['image'],
+        like=request.json['like'],
+        dislike=request.json['dislike'],
+        fullnames=request.json['fullnames'],
+        post=request.json['post'],
+        place=request.json['place'],
+        topic=request.json['topic'],
+        heading=request.json['heading'],
+        annotation=request.json['annotation'],
     )
     db_sess.add(projects)
     db_sess.commit()

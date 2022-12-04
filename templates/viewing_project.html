@@ -1,31 +1,31 @@
 {% extends "base.html" %}
 <body>
 {% block content %}
-<h1>{{ projects.title }}</h1>
+<h1>{{ projects.heading }}</h1>
 {% if projects.image %}
 <img class="img_project"
      src='../static/img/new_img.png'>
 {% endif %}
+<p>{{ projects.annotation }}</p>
 <div>
-    <a href="/like_projects/{{ projects.id }}" class="btn btn-success">
+    <a href="/like_projects/{{ projects.id }}" class="btn btn-outline-success">
         Нравится {{ projects.like }}
     </a>
 
-    <a href="/dislike_projects/{{ projects.id }}" class="btn btn-danger">
+    <a href="/dislike_projects/{{ projects.id }}" class="btn btn-outline-danger">
         Не нравится {{ projects.dislike }}
     </a>
 </div><br>
-<p>{{ projects.content }}</p>
-{% if current_user.is_authenticated and current_user == projects.user or current_user.is_developer %}
+<!--{% if current_user.is_authenticated and current_user == projects.user or current_user.is_developer %}
     <div>
-        <a href="/projects/{{ projects.id }}" class="btn btn-secondary">
+        <a href="/projects/{{ projects.id }}" class="btn btn-outline-secondary">
             Изменить
         </a>
-        <a href="/projects_delete/{{ projects.id }}" class="btn btn-danger">
+        <a href="/projects_delete/{{ projects.id }}" class="btn btn-outline-danger">
             Удалить
         </a>
     </div>
-{% endif %}
+{% endif %}-->
 <hr>
 <p>Напишите комментарий:</p>
 <form action="" method="post" class="comm">
