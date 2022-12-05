@@ -1,5 +1,5 @@
 from os import abort, remove
-from flask import Flask, request, make_response, render_template, redirect, jsonify, flash, redirect, url_for
+from flask import Flask, request, make_response, render_template, send_file, jsonify, send_from_directory, redirect, url_for
 import datetime
 from data import db_session, projects_resources
 from data.score import Score
@@ -39,6 +39,14 @@ def abort_if_projects_not_found(projects_id):
     projects = session.query(Projects).get(projects_id)
     if not projects:
         abort(404, message=f"Projects {projects_id} not found")
+
+
+@app.route('/download_docx/<int:id>')
+@login_required
+def download_docx(id):
+    db_sess = db_session.create_session()
+    projects = db_sess.query(Projects).filter(Projects.id == id).first()
+    return send_file('applications\\text\\' + projects.fullnames + '.docx')
 
 
 def main():
@@ -458,7 +466,7 @@ def projects_delete(id):
 @app.route('/developer_panel')
 @login_required
 def developer_panel():
-    if current_user.is_developer:
+    if current_user.is_authenticated:
         db_sess = db_session.create_session()
         if current_user.is_authenticated:
             projects = db_sess.query(Projects).filter(
