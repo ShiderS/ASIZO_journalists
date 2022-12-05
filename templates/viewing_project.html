@@ -16,6 +16,12 @@
         Не нравится {{ projects.dislike }}
     </a>
 </div><br>
+{% if current_user.is_authenticated and current_user.is_developer %}
+<a href="/developer_panel/projects_approve/{{ projects.id }}" class="btn btn-outline-warning">
+            Одобрить
+        </a>
+    <a href="/score_submission/{{ projects.id }}" class="btn btn-outline-success">Оценить</a>
+{% endif %}
 <!--{% if current_user.is_authenticated and current_user == projects.user or current_user.is_developer %}
     <div>
         <a href="/projects/{{ projects.id }}" class="btn btn-outline-secondary">

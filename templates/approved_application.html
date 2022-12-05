@@ -1,13 +1,17 @@
 {% extends "base.html" %}
 
 {% block content %}
-<h1>Оцененные заявки</h1>
-{% if current_user.is_authenticated %}
+<h1>Неоцененные заявки</h1>
+{% if current_user.is_authenticated and current_user.is_developer %}
 {% endif %}
 {% for item in projects %}
-{% if item.is_confirmed %}
+{% if not item.is_confirmed %}
 <div class="col-md6 border rounded">
-    <a href="/score_submission/{{ item.id }}" class="text-decoration-none text-reset"><h2>{{item.heading}}</h2></a>
+    <a href="/viewing_project/{{ item.id }}" class="text-decoration-none text-reset"><h3>{{item.heading}}</h3></a>
+    <a href="/developer_panel/projects_approve/{{ item.id }}" class="btn btn-outline-warning">
+            Одобрить
+        </a>
+    <a href="/score_submission/{{ item.id }}" class="btn btn-outline-success">Оценить</a>
     <!--<div>
         <h5>{{item.content}}</h5>
     </div>-->

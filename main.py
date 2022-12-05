@@ -197,10 +197,6 @@ def viewing_project(id):
 
     if request.method == 'POST':
         project_comment(id)
-    image_project = projects.image
-    if image_project:
-        with open('static/img/new_img.png', 'wb') as f:
-            f.write(image_project)
 
     with open('static/comments.txt', 'r') as f:
         comments = f.readlines()
@@ -211,6 +207,7 @@ def viewing_project(id):
         nick = db_sess.query(User).filter(User.id == new[1]).first()
         if projects.id == int(new[2]):
             comments_new.append([new[0], nick])
+
     return render_template("viewing_project.html", projects=projects, comments=comments_new)
 
 
@@ -397,7 +394,7 @@ def score_submission(id):
         db_sess.add(score)
         db_sess.commit()
 
-        return redirect('/')
+        return redirect('/approved_panel')
     return render_template('score.html', title='Оценка заявки',
                            form=form)
 
@@ -483,7 +480,7 @@ def projects_approve(id):
             db_sess.commit()
         else:
             abort(404)
-        return redirect('/developer_panel')
+        return redirect('/approved_panel')
 
 
 @app.route('/developer_panel/projects_modification/<int:id>')
