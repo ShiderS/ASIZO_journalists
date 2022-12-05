@@ -187,10 +187,9 @@ def approved_panel():
         projects1 = db_sess.query(Projects).filter(Projects.title.like(f"%{search.capitalize()}%") |
                                                    Projects.title.like(f"%{search.lower()}%") |
                                                    Projects.title.like(f"%{search.upper()}%")).all()
-        return render_template("index.html", projects=projects1)
+        return render_template("approved_application.html", projects=projects1)
     if current_user.is_authenticated:
-        projects = db_sess.query(Projects).filter(
-            (Projects.user == current_user))
+        projects = db_sess.query(Projects).filter()
     else:
         projects = db_sess.query(Projects).filter()
 
@@ -468,12 +467,7 @@ def projects_delete(id):
 def developer_panel():
     if current_user.is_authenticated:
         db_sess = db_session.create_session()
-        if current_user.is_authenticated:
-            projects = db_sess.query(Projects).filter(
-                (Projects.user == current_user))
-        else:
-            projects = db_sess.query(Projects).filter()
-
+        projects = db_sess.query(Projects).filter()
         return render_template("index_developer.html", projects=projects)
 
 

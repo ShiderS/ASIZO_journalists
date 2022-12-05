@@ -2,10 +2,8 @@
 
 {% block content %}
 <h1>Неоцененные заявки</h1>
-{% if current_user.is_authenticated and current_user.is_developer %}
-{% endif %}
 {% for item in projects %}
-{% if not item.is_confirmed %}
+{% if not item.is_confirmed and current_user.is_developer and current_user.is_authenticated %}
 <div class="col-md6 border rounded">
     <a href="/viewing_project/{{ item.id }}" class="text-decoration-none text-reset"><h3>{{item.heading}}</h3></a>
     <a href="/developer_panel/projects_approve/{{ item.id }}" class="btn btn-outline-warning">
@@ -18,8 +16,8 @@
     <div>
         Автор - {{item.user.name}}, Дата написания - {{item.created_date}}
     </div>
-    {% endif %}
 </div>
+{% endif %}
 <br>
 {% endfor %}
 {% endblock %}
