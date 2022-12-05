@@ -1,30 +1,37 @@
 from os import abort, remove
-from flask import Flask, request, make_response, render_template, redirect, jsonify
+from flask import Flask, request, make_response, render_template, send_file, jsonify, send_from_directory, redirect, url_for
 import datetime
 from data import db_session, projects_resources
+from data.score import Score
 from data.user import User
+from forms.score import ScoreForm
 from forms.user import RegisterForm
 from flask_login import LoginManager, login_user, login_required, logout_user, current_user
 from forms.auth import LoginForm
-from data.projects import Projects
-from forms.projects import ProjectsForm
+from data.application import Projects
+from forms.application import ProjectsForm
 import projects_api
-from pattern import *
-
 from flask_restful import abort, Api
+from werkzeug.utils import secure_filename
+import os
 
+# static_path = os.path.join(project_root, '../client/static')
 app = Flask(__name__)
+# app = Flask(__name__, template_folder=template_path, static_folder=static_path)
 login_manager = LoginManager()
+
+UPLOAD_FOLDER = '/files'
+
+# расширения файлов, которые разрешено загружать
+ALLOWED_EXTENSIONS = {'txt', 'pdf', 'png', 'jpg', 'jpeg', 'gif'}
+
 login_manager.init_app(app)
 app.config['SECRET_KEY'] = 'secret_key'
 app.config['PERMANENT_SESSION_LIFETIME'] = datetime.timedelta(
     days=365
 )
+app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 api = Api(app)
-
-
-def delete_project(id):
-    pass
 
 
 def abort_if_projects_not_found(projects_id):
@@ -32,6 +39,14 @@ def abort_if_projects_not_found(projects_id):
     projects = session.query(Projects).get(projects_id)
     if not projects:
         abort(404, message=f"Projects {projects_id} not found")
+
+
+@app.route('/download_docx/<int:id>')
+@login_required
+def download_docx(id):
+    db_sess = db_session.create_session()
+    projects = db_sess.query(Projects).filter(Projects.id == id).first()
+    return send_file('applications\\text\\' + projects.fullnames + '.docx')
 
 
 def main():
@@ -163,6 +178,24 @@ def login():
 # Проекты
 
 
+@app.route("/approved_panel", methods=['GET', 'POST'])
+def approved_panel():
+    db_sess = db_session.create_session()
+    if request.method == "POST":
+        db_sess = db_session.create_session()
+        search = request.form.get('text')
+        projects1 = db_sess.query(Projects).filter(Projects.title.like(f"%{search.capitalize()}%") |
+                                                   Projects.title.like(f"%{search.lower()}%") |
+                                                   Projects.title.like(f"%{search.upper()}%")).all()
+        return render_template("approved_application.html", projects=projects1)
+    if current_user.is_authenticated:
+        projects = db_sess.query(Projects).filter()
+    else:
+        projects = db_sess.query(Projects).filter()
+
+    return render_template("approved_application.html", projects=projects)
+
+
 @app.route('/viewing_project/<int:id>', methods=['GET', 'POST'])
 @login_required
 def viewing_project(id):
@@ -171,10 +204,6 @@ def viewing_project(id):
 
     if request.method == 'POST':
         project_comment(id)
-    image_project = projects.image
-    if image_project:
-        with open('static/img/new_img.png', 'wb') as f:
-            f.write(image_project)
 
     with open('static/comments.txt', 'r') as f:
         comments = f.readlines()
@@ -185,6 +214,7 @@ def viewing_project(id):
         nick = db_sess.query(User).filter(User.id == new[1]).first()
         if projects.id == int(new[2]):
             comments_new.append([new[0], nick])
+
     return render_template("viewing_project.html", projects=projects, comments=comments_new)
 
 
@@ -283,44 +313,96 @@ def index():
     db_sess = db_session.create_session()
     if request.method == "POST":
         db_sess = db_session.create_session()
+        user = db_sess.query(User).filter(User.id == current_user.get_id()).first()
         search = request.form.get('text')
         projects1 = db_sess.query(Projects).filter(Projects.title.like(f"%{search.capitalize()}%") |
                                                    Projects.title.like(f"%{search.lower()}%") |
                                                    Projects.title.like(f"%{search.upper()}%")).all()
-        return render_template("index.html", projects=projects1)
+        return render_template("index1.html", user=user)
+    user = db_sess.query(User).filter(User.id == current_user.get_id()).first()
     if current_user.is_authenticated:
         projects = db_sess.query(Projects).filter(
-            (Projects.user == current_user) | (Projects.is_private != True))
+            (Projects.user == current_user))
     else:
-        projects = db_sess.query(Projects).filter((Projects.is_private != True))
+        projects = db_sess.query(Projects).filter()
 
-    return render_template("index.html", projects=projects)
+    return render_template("index1.html", user=user)
 
 
-@app.route('/projects', methods=['GET', 'POST'])
+# Отправляем заявку
+
+
+@app.route('/application_submission', methods=['GET', 'POST'])
 @login_required
-def add_projects():
+def application_submission():
     form = ProjectsForm()
     if form.validate_on_submit():
         db_sess = db_session.create_session()
         projects = Projects()
-        projects.title = form.title.data
-        projects.content = form.content.data
-        projects.is_private = form.is_private.data
-        f = form.image.data
+        projects.fullnames = ' '.join([form.surname.data, form.name.data, form.middle_name.data])
+        projects.post = form.post.data
+        projects.place = form.place.data
+        projects.topic = form.topic.data
+        projects.heading = form.heading.data
+        projects.annotation = form.annotation.data
+
+        file = form.docx.data
         check = 0
-        if f.filename != '':
-            check = 1
-            save_to = f'static/temporary_img/{f.filename}'
-            f.save(save_to)
-            projects.image = convert_to_binary_data(save_to)
+        if file:
+            try:
+                # безопасно извлекаем оригинальное имя файла
+                filename = f"{' '.join([form.surname.data, form.name.data, form.middle_name.data])}.docx"
+                # сохраняем файл
+                save_to = f'applications/text/{filename}'
+                file.save(save_to)
+                file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+                projects.docx = save_to
+                # если все прошло успешно, то перенаправляем
+                # на функцию-представление `download_file`
+                # для скачивания файла
+            except:
+                projects.docx = file.filename
+                current_user.projects.append(projects)
+                db_sess.merge(current_user)
+                db_sess.commit()
+                return redirect('/')
+        projects.docx = file.filename
         current_user.projects.append(projects)
         db_sess.merge(current_user)
         db_sess.commit()
         if check:
             remove(save_to)
         return redirect('/')
-    return render_template('projects.html', title='Добавление проекта',
+    return render_template('application_submission.html', title='Добавление проекта',
+                           form=form)
+
+
+@app.route('/score_submission/<int:id>', methods=['GET', 'POST'])
+@login_required
+def score_submission(id):
+    form = ScoreForm()
+    if form.validate_on_submit():
+        db_sess = db_session.create_session()
+        score = Score()
+        score.application_id = id
+        score.est_actual = form.est_actual.data
+        score.est_purpose = form.est_purpose.data
+        score.est_validity = form.est_validity.data
+        score.est_resonance = form.est_resonance.data
+        score.est_present_style = form.est_present_style.data
+        score.est_professionalism = form.est_professionalism.data
+        score.est_feed_avail = form.est_feed_avail.data
+        score.est_materials_cycle = form.est_materials_cycle.data
+        score.est_add = form.est_add.data
+        score.est_cliche = form.est_cliche.data
+        score.est_contract = form.est_contract.data
+        score.est_gramm_errors = form.est_gramm_errors.data
+        score.est_lexical_errors = form.est_lexical_errors.data
+        db_sess.add(score)
+        db_sess.commit()
+
+        return redirect('/approved_panel')
+    return render_template('score.html', title='Оценка заявки',
                            form=form)
 
 
@@ -383,14 +465,9 @@ def projects_delete(id):
 @app.route('/developer_panel')
 @login_required
 def developer_panel():
-    if current_user.is_developer:
+    if current_user.is_authenticated:
         db_sess = db_session.create_session()
-        if current_user.is_authenticated:
-            projects = db_sess.query(Projects).filter(
-                (Projects.user == current_user) | (Projects.is_private != True))
-        else:
-            projects = db_sess.query(Projects).filter((Projects.is_private != True))
-
+        projects = db_sess.query(Projects).filter()
         return render_template("index_developer.html", projects=projects)
 
 
@@ -405,7 +482,7 @@ def projects_approve(id):
             db_sess.commit()
         else:
             abort(404)
-        return redirect('/developer_panel')
+        return redirect('/approved_panel')
 
 
 @app.route('/developer_panel/projects_modification/<int:id>')
