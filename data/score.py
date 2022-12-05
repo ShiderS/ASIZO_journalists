@@ -7,11 +7,11 @@ from .db_session import SqlAlchemyBase
 
 
 class Score(SqlAlchemyBase, SerializerMixin):
-    __tablename__ = 'estimations_txt'
+    __tablename__ = 'estimation_txt'
 
     id = sqlalchemy.Column(sqlalchemy.Integer,
                            primary_key=True, autoincrement=True)
-    application_id = sqlalchemy.Column(sqlalchemy.Integer, nullable=True)
+    application_id = sqlalchemy.Column(sqlalchemy.Integer, nullable=False)
     est_actual = sqlalchemy.Column(sqlalchemy.Integer, nullable=True, default=False)
     est_purpose = sqlalchemy.Column(sqlalchemy.Integer, nullable=True, default=False)
     est_validity = sqlalchemy.Column(sqlalchemy.Integer, nullable=True, default=False)
@@ -26,6 +26,6 @@ class Score(SqlAlchemyBase, SerializerMixin):
     est_gramm_errors = sqlalchemy.Column(sqlalchemy.Integer, nullable=True, default=False)
     est_lexical_errors = sqlalchemy.Column(sqlalchemy.Integer, nullable=True, default=False)
 
-    user_id = sqlalchemy.Column(sqlalchemy.Integer,
-                                sqlalchemy.ForeignKey("users.id"))
-    user = orm.relation('User')
+    # user_id = sqlalchemy.Column(sqlalchemy.Integer,
+    #                            sqlalchemy.ForeignKey("users.id"))
+    # user = orm.relation('User')

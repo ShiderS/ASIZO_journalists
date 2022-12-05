@@ -14,7 +14,6 @@ import projects_api
 from flask_restful import abort, Api
 from werkzeug.utils import secure_filename
 import os
-from pattern import *
 
 # static_path = os.path.join(project_root, '../client/static')
 app = Flask(__name__)
@@ -380,7 +379,7 @@ def score_submission(id):
     form = ScoreForm()
     if form.validate_on_submit():
         db_sess = db_session.create_session()
-        score = db_sess.query(Score).filter(Score.id == id).first()
+        score = Score()
         score.application_id = id
         score.est_actual = form.est_actual.data
         score.est_purpose = form.est_purpose.data
@@ -395,10 +394,11 @@ def score_submission(id):
         score.est_contract = form.est_contract.data
         score.est_gramm_errors = form.est_gramm_errors.data
         score.est_lexical_errors = form.est_lexical_errors.data
-
+        db_sess.add(score)
         db_sess.commit()
+
         return redirect('/')
-    return render_template('score.html', title='Добавление проекта',
+    return render_template('score.html', title='Оценка заявки',
                            form=form)
 
 
