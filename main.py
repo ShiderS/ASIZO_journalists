@@ -383,6 +383,8 @@ def score_submission(id):
     form = ScoreForm()
     if form.validate_on_submit():
         db_sess = db_session.create_session()
+        projects = db_sess.query(Projects).filter(Projects.id == id).first()
+        projects.is_confirmed = 1
         score = Score()
         score.application_id = id
         score.est_actual = form.est_actual.data

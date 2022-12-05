@@ -21,10 +21,10 @@
     Загрузить docx
 </a>
 {% endif %}
-{% if current_user.is_authenticated and current_user.is_developer %}
-<a href="/developer_panel/projects_approve/{{ projects.id }}" class="btn btn-outline-warning">
-    Одобрить
-</a>
+{% if current_user.is_authenticated and current_user.is_developer and not projects.is_confirmed %}
+<!--<a href="/developer_panel/projects_approve/{{ projects.id }}" class="btn btn-outline-warning">-->
+<!--    Одобрить-->
+<!--</a>-->
 <a href="/score_submission/{{ projects.id }}" class="btn btn-outline-success">Оценить</a>
 {% endif %}
 
