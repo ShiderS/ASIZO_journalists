@@ -54,7 +54,7 @@
 .u-section-1 .u-image-1 {
   min-height: 657px;
   pointer-events: auto;
-  background-image: url("images/1802225361-0.jpeg");
+  background-image: url("../img/1802225361-0.jpeg");
   background-position: 50% 50%;
 }
 
@@ -495,7 +495,7 @@
 }
 
 .u-section-3 .u-image-1 {
-  background-image: url("images/df.jpg");
+  background-image: url("../img/df.jpg");
   min-height: 723px;
   background-position: 50% 50%;
 }
